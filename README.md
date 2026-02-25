@@ -33,6 +33,7 @@ Hivesto is a personal finance web app that blends the cosmic world of space with
 - The **Dashboard** displays your total nectar (income), total burn (expenses), and net balance — giving you an instant snapshot of your money's state.
 - **Goals** let you assign money toward specific targets — a vacation, an emergency fund, a new gadget — so your money always has a destination.
 - The **Honey Score** is a direct quantification of how well you're managing your money, updated every time you log a transaction.
+- **Gamified Landing** — To get users hooked, the landing page features a space-honeycomb background where falling nectar drops can be "caught" with the cursor to increase a live tracking hackathon score!
 
 > Hivesto doesn't just store your money data — it gives it meaning, direction, and orbit.
 
@@ -113,6 +114,7 @@ Hivesto is designed to look and work great on **all screen sizes** — from mobi
 
 | Feature | Description |
 |---|---|
+| 🕹️ Gamified Landing | "Catch the Nectar" interactive background to hook users immediately |
 | 🔐 Google Auth | One-click sign in via Firebase OAuth, auto profile creation |
 | 📊 Dashboard | Live summary of nectar, burn, net balance and Honey Score |
 | 🪐 Orbit Visualizer | Animated planet-orbit chart for savings goals |
