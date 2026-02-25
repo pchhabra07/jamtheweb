@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowRight, PlusCircle, LogOut, Activity, ClipboardList, Send, History } from 'lucide-react';
-import { auth, db, getTransactions, addTransaction, updateHoneyScore, logOut } from '../firebase';
+import { auth, db, getTransactions, addTransaction, updateHoneyScore, logOut, updateTutorialStep } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
+import TutorialPopup from '../components/TutorialPopup';
 import './Dashboard.css';
 
 function Dashboard() {
@@ -25,7 +26,7 @@ function Dashboard() {
                 setUser(currentUser);
                 await fetchData(currentUser.uid);
 
-                // Listen to user document for real-time Honey Score updates
+                // Listen to user document for real-time Honey Score and Tutorial updates
                 const unsubUser = onSnapshot(doc(db, "users", currentUser.uid), (doc) => {
                     if (doc.exists()) {
                         setUserData(doc.data());
@@ -66,6 +67,13 @@ function Dashboard() {
             // Update honey score
             await updateHoneyScore(user.uid, updatedTxs);
 
+            // Tutorial Logic: Steps 1 & 2
+            if (userData?.tutorialStep === 1 && type === 'nectar') {
+                await updateTutorialStep(user.uid, 2);
+            } else if (userData?.tutorialStep === 2 && type === 'burn') {
+                await updateTutorialStep(user.uid, 3);
+            }
+
             // Reset form
             setLabel('');
             setAmount('');
@@ -83,12 +91,20 @@ function Dashboard() {
         }
     };
 
+    const handleGoalsClick = async () => {
+        if (userData?.tutorialStep === 3) {
+            await updateTutorialStep(user.uid, 4);
+        }
+        navigate('/goals');
+    };
+
     // Calculations
     const totalNectar = transactions.filter(t => t.type === 'nectar').reduce((sum, t) => sum + t.amount, 0);
     const totalBurn = transactions.filter(t => t.type === 'burn').reduce((sum, t) => sum + t.amount, 0);
     const netBalance = totalNectar - totalBurn;
 
     const honeyScore = userData?.honeyScore || 0;
+    const tutorialStep = userData?.tutorialStep;
 
     // Calculate stroke dasharray for the circular progress (circumference = 2 * Math.PI * r, r=45, C=282.7)
     const circumference = 282.7;
@@ -131,9 +147,9 @@ function Dashboard() {
                             <div className="honey-score-value">{honeyScore}</div>
                         </div>
                         <p className="score-desc">Financial Health</p>
-                        <Link to="/goals" className="btn-secondary goals-link">
+                        <button onClick={handleGoalsClick} className="btn-secondary goals-link" style={{ background: tutorialStep === 3 ? 'rgba(245, 158, 11, 0.15)' : 'transparent' }}>
                             View Goals Orbit <ArrowRight size={16} />
-                        </Link>
+                        </button>
                     </div>
 
                     {/* Summary Cards */}
@@ -156,7 +172,10 @@ function Dashboard() {
                     </div>
 
                     {/* Quick Add Form */}
-                    <div className="panel add-tx-panel">
+                    <div id="add-tx-form-panel" className="panel add-tx-panel" style={{
+                        border: tutorialStep <= 2 ? '2px solid #f59e0b' : '1px solid rgba(245, 158, 11, 0.3)',
+                        boxShadow: tutorialStep <= 2 ? '0 0 20px rgba(245, 158, 11, 0.2)' : ''
+                    }}>
                         <h3><Send size={18} /> Log Transaction</h3>
                         <form onSubmit={handleAddTransaction} className="add-tx-form">
                             <div className="tx-type-toggle">
@@ -232,8 +251,26 @@ function Dashboard() {
 
                 </div>
             </main>
+
+            {/* Tutorial Popups */}
+            <TutorialPopup
+                step={1}
+                isVisible={tutorialStep === 1}
+                content="Welcome, Captain! Let's start by recording your first Nectar (income). For example, add 'Salary' of $10000."
+            />
+            <TutorialPopup
+                step={2}
+                isVisible={tutorialStep === 2}
+                content="Great! Now let's record a Burn (expense). For example, add 'Rent' of $6000. This tracks your ship's fuel usage."
+            />
+            <TutorialPopup
+                step={3}
+                isVisible={tutorialStep === 3}
+                content="Perfect! Your ship's log is looking healthy. Now, click 'View Goals Orbit' to start building your solar system."
+            />
         </div>
     );
 }
 
 export default Dashboard;
+

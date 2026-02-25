@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, PlusCircle, Target, Trash2, CheckCircle } from 'lucide-react';
-import { auth, getGoals, addGoal, fundGoal, addTransaction, getTransactions, updateHoneyScore, deleteGoal } from '../firebase';
+import { auth, db, getGoals, addGoal, fundGoal, addTransaction, getTransactions, updateHoneyScore, deleteGoal, updateTutorialStep } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import { doc, onSnapshot } from 'firebase/firestore';
+import TutorialPopup from '../components/TutorialPopup';
 import './Goals.css';
 
 function Goals() {
     const [user, setUser] = useState(null);
+    const [userData, setUserData] = useState(null);
     const [goals, setGoals] = useState([]);
     const [netBalance, setNetBalance] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -26,6 +29,15 @@ function Goals() {
             if (currentUser) {
                 setUser(currentUser);
                 await fetchData(currentUser.uid);
+
+                // Listen to user document for tutorial step
+                const unsubUser = onSnapshot(doc(db, "users", currentUser.uid), (doc) => {
+                    if (doc.exists()) {
+                        setUserData(doc.data());
+                    }
+                });
+
+                return () => unsubUser();
             } else {
                 navigate('/auth');
             }
@@ -59,6 +71,12 @@ function Goals() {
 
         try {
             await addGoal(user.uid, { label, target });
+
+            // Tutorial logic: Step 4
+            if (userData?.tutorialStep === 4) {
+                await updateTutorialStep(user.uid, 5);
+            }
+
             await fetchData(user.uid);
             setLabel('');
             setTarget('');
@@ -88,6 +106,11 @@ function Goals() {
                     amount: amountNum,
                     type: 'burn'
                 });
+            }
+
+            // Tutorial logic: Step 5 (Final)
+            if (userData?.tutorialStep === 5) {
+                await updateTutorialStep(user.uid, 'finished');
             }
 
             const updatedTxs = await getTransactions(user.uid);
@@ -141,6 +164,7 @@ function Goals() {
 
     const activeGoals = goals.filter(g => g.current < g.target);
     const completedGoals = goals.filter(g => g.current >= g.target);
+    const tutorialStep = userData?.tutorialStep;
 
     return (
         <div className="goals-container">
@@ -245,7 +269,10 @@ function Goals() {
 
                     {/* Sidebar */}
                     <div className="goals-sidebar">
-                        <div className="panel add-goal-panel">
+                        <div className="panel add-goal-panel" style={{
+                            border: tutorialStep === 4 ? '2px solid #f59e0b' : '1px solid rgba(245, 158, 11, 0.3)',
+                            boxShadow: tutorialStep === 4 ? '0 0 20px rgba(245, 158, 11, 0.2)' : ''
+                        }}>
                             <h3><Target size={18} /> Add New Planet</h3>
                             <form onSubmit={handleAddGoal} className="goal-form">
                                 <div className="input-group">
@@ -276,7 +303,10 @@ function Goals() {
                         </div>
 
                         {activeGoals.length > 0 && (
-                            <div className="panel fund-goal-panel">
+                            <div className="panel fund-goal-panel" style={{
+                                border: tutorialStep === 5 ? '2px solid #f59e0b' : '1px solid rgba(245, 158, 11, 0.3)',
+                                boxShadow: tutorialStep === 5 ? '0 0 20px rgba(245, 158, 11, 0.2)' : ''
+                            }}>
                                 <h3>Fuel Your Orbit</h3>
                                 <form onSubmit={handleSidebarFund} className="goal-form">
                                     <div className="input-group">
@@ -341,8 +371,21 @@ function Goals() {
                     </div>
                 )}
             </main>
+
+            {/* Tutorial Popups */}
+            <TutorialPopup
+                step={4}
+                isVisible={tutorialStep === 4}
+                content="Welcome to the Orbit! Let's add your first Goal planet. For example, add 'Vacation' with a target of $20000."
+            />
+            <TutorialPopup
+                step={5}
+                isVisible={tutorialStep === 5}
+                content="A new planet has entered your system! Now, use your net balance to fuel it. Inject some funds, e.g., $3000, into your 'Vacation' goal."
+            />
         </div>
     );
 }
 
 export default Goals;
+

@@ -32,6 +32,7 @@ export const signInWithGoogle = async () => {
             photoURL: user.photoURL,
             createdAt: new Date(),
             honeyScore: 50,
+            tutorialStep: 1,
         });
     }
 
@@ -54,6 +55,7 @@ export const signUpEmail = async (email, password, name) => {
         photoURL: null,
         createdAt: new Date(),
         honeyScore: 50,
+        tutorialStep: 1,
     });
 
     return user;
@@ -125,4 +127,8 @@ export const updateHoneyScore = async (uid, transactions) => {
 
     await updateDoc(doc(db, "users", uid), { honeyScore: Math.max(0, score) });
     return Math.max(0, score);
+};
+
+export const updateTutorialStep = async (uid, step) => {
+    await updateDoc(doc(db, "users", uid), { tutorialStep: step });
 };
