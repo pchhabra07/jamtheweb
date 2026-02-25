@@ -119,20 +119,8 @@
     width: 100%;
     height: 100%;
     min-height: 540px;
-    perspective: 900px;
-    perspective-origin: 50% 40%;
 }
 
-/* 3D tilt wrapper — carries width/height + the rotateX tilt */
-.orbit-tilt-wrapper {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotateX(68deg);
-    transform-style: preserve-3d;
-    border-radius: 50%;
-    transition: width 1s ease-in-out, height 1s ease-in-out;
-}
 
 /* ===========================
    SUN — Central star
@@ -177,14 +165,13 @@
    ORBIT RINGS
    =========================== */
 .orbit-ring {
-    width: 100%;
-    height: 100%;
-    border: 1px dashed rgba(255, 255, 255, 0.07);
+    position: absolute;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
     border-radius: 50%;
     animation: orbit-spin linear infinite;
     display: flex;
     justify-content: center;
-    position: relative;
+    transition: width 1s ease-in-out, height 1s ease-in-out;
 }
 
 .orbit-ring.paused {
@@ -218,12 +205,11 @@
 }
 
 /* ===========================
-   HEXAGONAL PLANETS
-   Hexagon via clip-path polygon
+   PLANETS
    =========================== */
 .planet-container {
     position: absolute;
-    top: -16px;
+    top: -12px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -236,23 +222,23 @@
     filter: brightness(1.25);
 }
 
-/* Circle planet — 3D sphere via radial gradient in JSX */
-.planet {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    position: relative;
-    transition: all 0.25s ease;
-    filter: drop-shadow(4px 6px 8px rgba(0, 0, 0, 0.7)) drop-shadow(-1px -2px 4px rgba(255, 255, 255, 0.08));
+.planet-container.active .planet {
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.8), 0 0 20px currentColor;
+    transform: scale(1.3);
 }
 
-.planet-container.active .planet {
-    transform: scale(1.45);
-    filter: drop-shadow(0 0 10px currentColor);
+.planet {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    box-shadow: inset -4px -4px 8px rgba(0, 0, 0, 0.3);
+    position: relative;
+    transition: all 0.2s;
 }
 
 .planet:hover {
     transform: scale(1.2);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
 }
 
 /* ===========================

@@ -8,9 +8,10 @@
     color: var(--color-text-main);
     overflow: hidden;
     background-color: #111111;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' style='font-size:36px'%3E%3Ctext y='34'%3E🍯%3C/text%3E%3C/svg%3E") 24 24, auto;
 }
 
-.honeycomb-canvas {
+.gradient-bg-layer {
     position: absolute;
     top: 0;
     left: 0;
@@ -18,6 +19,42 @@
     height: 100%;
     z-index: 0;
     pointer-events: none;
+    background:
+        radial-gradient(circle 800px at var(--mouse-x, 50%) var(--mouse-y, 50%),
+            rgba(245, 158, 11, 0.15),
+            transparent 80%),
+        radial-gradient(circle 1200px at calc(100% - var(--mouse-x, 50%)) calc(100% - var(--mouse-y, 50%)),
+            rgba(217, 119, 6, 0.08),
+            transparent 80%);
+    transition: background 0.15s ease;
+}
+
+/* Base animated space gradient */
+.landing-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(-45deg, #0f111a, #1a1510, #22150a, #0f111a);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    z-index: -1;
+}
+
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 .landing-nav {
@@ -28,7 +65,6 @@
     align-items: center;
     padding: 1.5rem 5%;
     background: linear-gradient(to bottom, rgba(17, 17, 17, 0.9) 0%, rgba(17, 17, 17, 0) 100%);
-    border-bottom: 1px solid rgba(245, 158, 11, 0.1);
 }
 
 .logo {
@@ -55,9 +91,15 @@
 
 .hero-content {
     max-width: 800px;
-    background: radial-gradient(circle at center, rgba(17, 17, 17, 0.8) 0%, transparent 70%);
     padding: 2rem;
     border-radius: 2rem;
+    pointer-events: none;
+    /* Allow catching honey behind text */
+}
+
+.hero-cta {
+    pointer-events: auto;
+    /* Keep button clickable */
 }
 
 .hero-title {
@@ -72,13 +114,8 @@
 }
 
 .text-honey {
-    color: #fbbf24;
-    /* Lighter vivid orange/yellow */
-    background: linear-gradient(to bottom, #fde68a, #f59e0b);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: none;
-    filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.4));
+    color: #f59e0b;
+    /* Solid honey color instead of gradient */
 }
 
 .hero-subtitle {
@@ -103,6 +140,39 @@
 
 .btn-large:hover {
     box-shadow: 0 0 40px rgba(245, 158, 11, 0.6);
+}
+
+/* --- Transition Button Styles --- */
+.cta-transition-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-expansion-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 50%, #d97706 100%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 1.2s cubic-bezier(0.86, 0, 0.07, 1),
+        height 1.2s cubic-bezier(0.86, 0, 0.07, 1);
+    z-index: 100;
+    pointer-events: none;
+}
+
+/* When transition is active, break overflow and expand the circle */
+.landing-container.transition-active .cta-transition-btn {
+    overflow: visible;
+    color: transparent;
+    pointer-events: none;
+}
+
+.landing-container.transition-active .cta-expansion-bg {
+    width: 300vmax;
+    height: 300vmax;
 }
 
 .features-section {
@@ -132,28 +202,10 @@
     overflow: hidden;
 }
 
-/* Subtle hexagon background on hover in cards */
-.feature-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    opacity: 0;
-    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0l20 10v20L20 40 0 30V10z' fill-opacity='0.1' fill='%23f59e0b' fill-rule='evenodd'/%3E%3C/svg%3E");
-    transition: opacity 0.3s ease;
-    z-index: -1;
-}
-
 .feature-card:hover {
     transform: translateY(-5px);
     border-color: rgba(245, 158, 11, 0.5);
     box-shadow: 0 10px 30px rgba(245, 158, 11, 0.1);
-}
-
-.feature-card:hover::before {
-    opacity: 1;
 }
 
 .feature-icon {

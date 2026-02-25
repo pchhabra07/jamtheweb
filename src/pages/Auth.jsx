@@ -24,7 +24,7 @@ function Auth() {
             } else {
                 await signUpEmail(email, password, name);
             }
-            navigate('/dashboard');
+            navigate('/goals');
         } catch (err) {
             console.error(err);
             setError(err.message || 'An error occurred during authentication');
@@ -38,7 +38,7 @@ function Auth() {
         setLoading(true);
         try {
             await signInWithGoogle();
-            navigate('/dashboard');
+            navigate('/goals');
         } catch (err) {
             console.error(err);
             setError(err.message || 'Google sign-in failed');
@@ -50,7 +50,7 @@ function Auth() {
     return (
         <div className="auth-container">
             <div className="auth-card">
-                <Link to="/" className="auth-logo">🍯 Hivesto</Link>
+                <Link to="/" className="auth-logo">🍯 Hivest</Link>
                 <h2 className="auth-title">{isLogin ? 'Welcome Back' : 'Join the Hive'}</h2>
                 <p className="auth-subtitle">
                     {isLogin ? 'Enter your details to access your orbit.' : 'Start your financial journey today.'}
