@@ -43,7 +43,6 @@ function Goals() {
 
             setGoals(fetchedGoals);
 
-            // Calculate available net balance
             const nectar = txs.filter(t => t.type === 'nectar').reduce((s, t) => s + t.amount, 0);
             const burn = txs.filter(t => t.type === 'burn').reduce((s, t) => s + t.amount, 0);
             setNetBalance(nectar - burn);
@@ -81,10 +80,8 @@ function Goals() {
         try {
             const targetGoal = goals.find(g => g.id === selectedGoalId);
 
-            // 1. Fund the goal
             await fundGoal(selectedGoalId, fundAmount);
 
-            // 2. Log realistic transaction "burn" for funding the goal
             if (targetGoal) {
                 await addTransaction(user.uid, {
                     label: `Funded Goal: ${targetGoal.label}`,
@@ -93,7 +90,6 @@ function Goals() {
                 });
             }
 
-            // 3. Update the global honey score with new transactions & refetch everything
             const updatedTxs = await getTransactions(user.uid);
             await updateHoneyScore(user.uid, updatedTxs);
             await fetchData(user.uid);
@@ -111,7 +107,6 @@ function Goals() {
         try {
             await deleteGoal(goal.id);
 
-            // Refund whatever was in the goal back to the user's nectar balance
             if (goal.current > 0) {
                 await addTransaction(user.uid, {
                     label: `Refunded Goal: ${goal.label}`,
@@ -134,9 +129,16 @@ function Goals() {
         return <div className="loading-screen">Aligning planets...</div>;
     }
 
-    const planetColors = ['#f59e0b', '#3b82f6', '#10b981', '#ef4444', '#a855f7', '#ec4899'];
+    // Warm neon orange-yellow palette
+    const planetColors = [
+        '#f59e0b', // amber
+        '#f97316', // orange
+        '#fbbf24', // yellow-amber
+        '#fb923c', // light orange
+        '#fde68a', // pale yellow
+        '#ea580c', // deep orange
+    ];
 
-    // Separate goals into active and completed
     const activeGoals = goals.filter(g => g.current < g.target);
     const completedGoals = goals.filter(g => g.current >= g.target);
 
@@ -155,9 +157,10 @@ function Goals() {
             <main className="goals-content">
                 <div className="goals-grid">
 
-                    {/* Orbit Visualizer - ONLY ACITVE GOALS */}
+                    {/* Orbit Visualizer — ONLY ACTIVE GOALS */}
                     <div className="panel orbit-visualizer-panel">
                         <div className="orbit-system">
+
                             {/* Central Sun */}
                             <div className="sun">
                                 <div className="sun-glow"></div>
@@ -167,72 +170,101 @@ function Goals() {
                             {activeGoals.map((goal, index) => {
                                 const percent = Math.min(100, (goal.current / goal.target) * 100);
 
-                                // Dynamic distance calculation: closer as percent increases
-                                const minOrbitSize = 140 + (index * 60);
-                                const maxOrbitSize = 320 + (index * 80);
+                                const minOrbitSize = 190 + (index * 70);
+                                const maxOrbitSize = 380 + (index * 90);
                                 const orbitSize = maxOrbitSize - ((percent / 100) * (maxOrbitSize - minOrbitSize));
 
                                 const color = planetColors[index % planetColors.length];
-                                const duration = 15 + (index * 10); // Slower orbit for outer planets
+                                const duration = 15 + (index * 10);
                                 const isSelected = selectedGoalId === goal.id;
+                                const gradId = `trail-grad-${goal.id}`;
+                                const circumference = 2 * Math.PI * 49;
 
                                 return (
                                     <div
                                         key={goal.id}
-                                        className={`orbit-ring ${isSelected ? 'paused' : ''}`}
-                                        style={{
-                                            width: `${orbitSize}px`,
-                                            height: `${orbitSize}px`,
-                                            animationDuration: `${duration}s`
-                                        }}
+                                        className="orbit-tilt-wrapper"
+                                        style={{ width: `${orbitSize}px`, height: `${orbitSize}px` }}
                                     >
-                                        <svg viewBox="0 0 100 100" className="orbit-svg-trail">
-                                            <circle
-                                                cx="50" cy="50" r="49"
-                                                fill="none"
-                                                stroke={color}
-                                                strokeWidth="2"
-                                                strokeDasharray="307.87"
-                                                strokeDashoffset={307.87 * (1 - percent / 100)}
-                                                strokeLinecap="round"
-                                                style={{ transition: 'stroke-dashoffset 1s ease-in-out' }}
-                                            />
-                                        </svg>
-
                                         <div
-                                            className={`planet-container ${isSelected ? 'active' : ''}`}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setSelectedGoalId(isSelected ? null : goal.id);
-                                            }}
+                                            className={`orbit-ring ${isSelected ? 'paused' : ''}`}
+                                            style={{ animationDuration: `${duration}s` }}
                                         >
-                                            <div className="planet" style={{ backgroundColor: color }}></div>
+                                            {/* Neon gradient trail */}
+                                            <svg viewBox="0 0 100 100" className="orbit-svg-trail">
+                                                <defs>
+                                                    <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="0%">
+                                                        <stop offset="0%" stopColor="#f97316" stopOpacity="0.9" />
+                                                        <stop offset="50%" stopColor={color} stopOpacity="1" />
+                                                        <stop offset="100%" stopColor="#fde68a" stopOpacity="0.6" />
+                                                    </linearGradient>
+                                                    <filter id={`glow-${goal.id}`}>
+                                                        <feGaussianBlur stdDeviation="1.2" result="blur" />
+                                                        <feMerge>
+                                                            <feMergeNode in="blur" />
+                                                            <feMergeNode in="SourceGraphic" />
+                                                        </feMerge>
+                                                    </filter>
+                                                </defs>
+                                                {/* Ghost orbit track */}
+                                                <circle cx="50" cy="50" r="49" fill="none" stroke={color} strokeWidth="0.4" strokeOpacity="0.12" />
+                                                {/* Active filled trail */}
+                                                <circle
+                                                    cx="50" cy="50" r="49"
+                                                    fill="none"
+                                                    stroke={`url(#${gradId})`}
+                                                    strokeWidth="1"
+                                                    strokeDasharray={circumference}
+                                                    strokeDashoffset={circumference * (1 - percent / 100)}
+                                                    strokeLinecap="round"
+                                                    filter={`url(#glow-${goal.id})`}
+                                                    style={{ transition: 'stroke-dashoffset 1s ease-in-out' }}
+                                                />
+                                            </svg>
 
-                                            {/* Name & Percent Label */}
-                                            <div className="planet-label" style={{ animationDuration: `${duration}s` }}>
-                                                <span className="name">{goal.label}</span>
-                                                <span className="percent">{Math.round(percent)}%</span>
-                                            </div>
-
-                                            {/* Delete Action on Planet when selected */}
-                                            {isSelected && (
+                                            {/* Planet sphere */}
+                                            <div
+                                                className={`planet-container ${isSelected ? 'active' : ''}`}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setSelectedGoalId(isSelected ? null : goal.id);
+                                                }}
+                                            >
                                                 <div
-                                                    className="planet-actions"
-                                                    style={{ animationDuration: `${duration}s` }}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleDeleteGoal(goal);
+                                                    className="planet"
+                                                    style={{
+                                                        background: `radial-gradient(circle at 33% 28%, #ffffff 0%, #fff8f0 8%, ${color} 40%, ${color}99 68%, rgba(0,0,0,0.65) 100%)`,
+                                                        boxShadow: isSelected
+                                                            ? `0 0 0 2px ${color}88, 0 0 22px ${color}bb`
+                                                            : `inset 0 0 0 0 transparent`,
                                                     }}
-                                                >
-                                                    <button className="btn-delete-planet" title="Delete & Refund">
-                                                        <Trash2 size={14} />
-                                                    </button>
+                                                />
+
+                                                <div className="planet-label" style={{ animationDuration: `${duration}s` }}>
+                                                    <span className="name">{goal.label}</span>
+                                                    <span className="percent">{Math.round(percent)}%</span>
                                                 </div>
-                                            )}
+
+                                                {isSelected && (
+                                                    <div
+                                                        className="planet-actions"
+                                                        style={{ animationDuration: `${duration}s` }}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleDeleteGoal(goal);
+                                                        }}
+                                                    >
+                                                        <button className="btn-delete-planet" title="Delete & Refund">
+                                                            <Trash2 size={14} />
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 );
                             })}
+
                             {activeGoals.length === 0 && (
                                 <div className="empty-orbit">
                                     <p>No active planets in your orbit.</p>
@@ -242,8 +274,8 @@ function Goals() {
                         </div>
                     </div>
 
+                    {/* Sidebar */}
                     <div className="goals-sidebar">
-                        {/* Add Goal Form */}
                         <div className="panel add-goal-panel">
                             <h3><Target size={18} /> Add New Planet</h3>
                             <form onSubmit={handleAddGoal} className="goal-form">
@@ -274,7 +306,6 @@ function Goals() {
                             </form>
                         </div>
 
-                        {/* Fund Goal Form */}
                         {activeGoals.length > 0 && (
                             <div className="panel fund-goal-panel">
                                 <h3>Fuel Your Orbit</h3>
@@ -317,7 +348,7 @@ function Goals() {
 
                 </div>
 
-                {/* Completed Goals Section */}
+                {/* Completed Goals */}
                 {completedGoals.length > 0 && (
                     <div className="completed-goals-section panel">
                         <h3><CheckCircle size={20} className="text-nectar" /> Fulfilled Goals</h3>

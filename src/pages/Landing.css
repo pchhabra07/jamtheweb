@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
 .landing-container {
     position: relative;
     min-height: 100vh;
@@ -30,13 +32,14 @@
 }
 
 .logo {
-    font-size: 1.5rem;
-    font-weight: 800;
-    letter-spacing: -0.5px;
+    font-size: 1.25rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
     display: flex;
     align-items: center;
     gap: 0.5rem;
     color: #fff;
+    font-family: 'Inter', sans-serif;
 }
 
 .hero {
@@ -58,12 +61,14 @@
 }
 
 .hero-title {
-    font-size: clamp(3rem, 8vw, 5rem);
-    font-weight: 800;
-    line-height: 1.1;
+    font-size: clamp(2.8rem, 7vw, 5rem);
+    font-weight: 300;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
     margin-bottom: 1.5rem;
     text-shadow: 0 4px 24px rgba(0, 0, 0, 0.8);
     color: #ffffff;
+    font-family: 'Inter', sans-serif;
 }
 
 .text-honey {
@@ -77,13 +82,16 @@
 }
 
 .hero-subtitle {
-    font-size: 1.25rem;
-    color: #cbd5e1;
+    font-size: 1rem;
+    font-weight: 400;
+    color: #94a3b8;
     margin-bottom: 2.5rem;
-    line-height: 1.6;
-    max-width: 600px;
+    line-height: 1.75;
+    max-width: 520px;
     margin-left: auto;
     margin-right: auto;
+    letter-spacing: 0.01em;
+    font-family: 'Inter', sans-serif;
 }
 
 .btn-large {
@@ -170,15 +178,20 @@
 }
 
 .feature-card h3 {
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
-    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
     color: #ffffff;
+    font-family: 'Inter', sans-serif;
 }
 
 .feature-card p {
-    color: #94a3b8;
-    line-height: 1.5;
+    color: #64748b;
+    line-height: 1.7;
+    font-size: 0.875rem;
+    font-weight: 400;
+    font-family: 'Inter', sans-serif;
 }
 
 @media (max-width: 768px) {
