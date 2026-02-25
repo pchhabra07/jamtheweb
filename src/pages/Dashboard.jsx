@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowRight, PlusCircle, LogOut } from 'lucide-react';
+import { ArrowRight, PlusCircle, LogOut, Activity, ClipboardList, Send, History } from 'lucide-react';
 import { auth, db, getTransactions, addTransaction, updateHoneyScore, logOut } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
@@ -115,13 +115,13 @@ function Dashboard() {
 
                     {/* Honey Score Panel */}
                     <div className="panel honey-score-panel">
-                        <h3>Honey Score</h3>
+                        <h3><Activity size={18} /> Honey Score</h3>
                         <div className="honey-score-meter">
                             <svg className="honey-progress-ring" width="120" height="120">
                                 <circle className="ring-bg" stroke="rgba(255,255,255,0.1)" strokeWidth="8" fill="transparent" r="45" cx="60" cy="60" />
                                 <circle
                                     className="ring-progress"
-                                    stroke="var(--color-amber)"
+                                    stroke="#f59e0b"
                                     strokeWidth="8"
                                     fill="transparent"
                                     r="45" cx="60" cy="60"
@@ -138,7 +138,7 @@ function Dashboard() {
 
                     {/* Summary Cards */}
                     <div className="panel summary-panel">
-                        <h3>Ship Manifest</h3>
+                        <h3><ClipboardList size={18} /> Ship Manifest</h3>
                         <div className="summary-cards">
                             <div className="summary-card nectar">
                                 <div className="label">Total Nectar</div>
@@ -157,7 +157,7 @@ function Dashboard() {
 
                     {/* Quick Add Form */}
                     <div className="panel add-tx-panel">
-                        <h3>Log Transaction</h3>
+                        <h3><Send size={18} /> Log Transaction</h3>
                         <form onSubmit={handleAddTransaction} className="add-tx-form">
                             <div className="tx-type-toggle">
                                 <button
@@ -207,7 +207,7 @@ function Dashboard() {
 
                     {/* Recent Transactions */}
                     <div className="panel recent-tx-panel">
-                        <h3>Recent Log</h3>
+                        <h3><History size={18} /> Recent Log</h3>
                         {transactions.length === 0 ? (
                             <p className="empty-state">No flight logs recorded yet.</p>
                         ) : (

@@ -24,7 +24,7 @@ function Auth() {
             } else {
                 await signUpEmail(email, password, name);
             }
-            navigate('/goals');
+            navigate('/dashboard');
         } catch (err) {
             console.error(err);
             setError(err.message || 'An error occurred during authentication');
@@ -38,7 +38,7 @@ function Auth() {
         setLoading(true);
         try {
             await signInWithGoogle();
-            navigate('/goals');
+            navigate('/dashboard');
         } catch (err) {
             console.error(err);
             setError(err.message || 'Google sign-in failed');
