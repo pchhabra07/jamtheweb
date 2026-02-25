@@ -6,9 +6,10 @@
     color: var(--color-text-main);
     overflow: hidden;
     background-color: #111111;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' style='font-size:36px'%3E%3Ctext y='34'%3E🍯%3C/text%3E%3C/svg%3E") 24 24, auto;
 }
 
-.honeycomb-canvas {
+.gradient-bg-layer {
     position: absolute;
     top: 0;
     left: 0;
@@ -16,6 +17,42 @@
     height: 100%;
     z-index: 0;
     pointer-events: none;
+    background:
+        radial-gradient(circle 800px at var(--mouse-x, 50%) var(--mouse-y, 50%),
+            rgba(245, 158, 11, 0.15),
+            transparent 80%),
+        radial-gradient(circle 1200px at calc(100% - var(--mouse-x, 50%)) calc(100% - var(--mouse-y, 50%)),
+            rgba(217, 119, 6, 0.08),
+            transparent 80%);
+    transition: background 0.15s ease;
+}
+
+/* Base animated space gradient */
+.landing-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(-45deg, #0f111a, #1a1510, #22150a, #0f111a);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    z-index: -1;
+}
+
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 .landing-nav {
@@ -26,7 +63,6 @@
     align-items: center;
     padding: 1.5rem 5%;
     background: linear-gradient(to bottom, rgba(17, 17, 17, 0.9) 0%, rgba(17, 17, 17, 0) 100%);
-    border-bottom: 1px solid rgba(245, 158, 11, 0.1);
 }
 
 .logo {
@@ -37,6 +73,33 @@
     align-items: center;
     gap: 0.5rem;
     color: #fff;
+}
+
+.hackathon-score {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: #f8fafc;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+    backdrop-filter: blur(5px);
+    transition: transform 0.2s ease;
+}
+
+.hackathon-score:hover {
+    transform: scale(1.05);
+    background: rgba(245, 158, 11, 0.15);
+}
+
+.hackathon-score strong {
+    color: #f59e0b;
+    font-weight: 800;
+    font-size: 1.1rem;
+    margin-left: 0.25rem;
 }
 
 .hero {
@@ -52,38 +115,41 @@
 
 .hero-content {
     max-width: 800px;
-    background: radial-gradient(circle at center, rgba(17, 17, 17, 0.8) 0%, transparent 70%);
     padding: 2rem;
     border-radius: 2rem;
+    pointer-events: none;
+    /* Allow catching honey behind text */
+}
+
+.hero-cta {
+    pointer-events: auto;
+    /* Keep button clickable */
 }
 
 .hero-title {
-    font-size: clamp(3rem, 8vw, 5rem);
-    font-weight: 800;
+    font-size: 3.5rem;
+    /* Reduced from 4rem */
+    font-weight: 600;
+    /* Semibold */
     line-height: 1.1;
     margin-bottom: 1.5rem;
-    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.8);
-    color: #ffffff;
+    color: #f8fafc;
 }
 
 .text-honey {
-    color: #fbbf24;
-    /* Lighter vivid orange/yellow */
-    background: linear-gradient(to bottom, #fde68a, #f59e0b);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: none;
-    filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.4));
+    color: #f59e0b;
+    /* Solid honey color instead of gradient */
 }
 
 .hero-subtitle {
-    font-size: 1.25rem;
-    color: #cbd5e1;
-    margin-bottom: 2.5rem;
-    line-height: 1.6;
+    font-size: 1.125rem;
+    /* Slightly reduced */
+    font-weight: 400;
+    /* Regular */
+    color: #94a3b8;
     max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto 2.5rem;
+    line-height: 1.6;
 }
 
 .btn-large {
@@ -124,28 +190,10 @@
     overflow: hidden;
 }
 
-/* Subtle hexagon background on hover in cards */
-.feature-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    opacity: 0;
-    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0l20 10v20L20 40 0 30V10z' fill-opacity='0.1' fill='%23f59e0b' fill-rule='evenodd'/%3E%3C/svg%3E");
-    transition: opacity 0.3s ease;
-    z-index: -1;
-}
-
 .feature-card:hover {
     transform: translateY(-5px);
     border-color: rgba(245, 158, 11, 0.5);
     box-shadow: 0 10px 30px rgba(245, 158, 11, 0.1);
-}
-
-.feature-card:hover::before {
-    opacity: 1;
 }
 
 .feature-icon {
@@ -171,14 +219,18 @@
 
 .feature-card h3 {
     font-size: 1.25rem;
-    margin-bottom: 1rem;
+    /* Reduced from 1.5rem */
     font-weight: 600;
-    color: #ffffff;
+    /* Semibold */
+    margin-bottom: 0.75rem;
+    color: #f8fafc;
 }
 
 .feature-card p {
     color: #94a3b8;
-    line-height: 1.5;
+    line-height: 1.6;
+    font-weight: 400;
+    /* Regular */
 }
 
 @media (max-width: 768px) {

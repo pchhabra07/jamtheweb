@@ -146,7 +146,7 @@ function Goals() {
                 <Link to="/dashboard" className="btn-back">
                     <ArrowLeft size={20} /> Back to Dashboard
                 </Link>
-                <h2>Your Orbit</h2>
+                <h2>Where money orbits the hive</h2>
                 <div className="net-balance-indicator">
                     Available Balance: <strong>${netBalance.toFixed(2)}</strong>
                 </div>
