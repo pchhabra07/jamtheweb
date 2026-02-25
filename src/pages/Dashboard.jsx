@@ -12,6 +12,7 @@ function Dashboard() {
     const [userData, setUserData] = useState(null);
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isTutorialDismissed, setIsTutorialDismissed] = useState(false);
 
     // Form state
     const [label, setLabel] = useState('');
@@ -19,6 +20,11 @@ function Dashboard() {
     const [type, setType] = useState('nectar');
 
     const navigate = useNavigate();
+
+    // Reset dismissal state when tutorial step changes
+    useEffect(() => {
+        setIsTutorialDismissed(false);
+    }, [userData?.tutorialStep]);
 
     useEffect(() => {
         const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
@@ -255,18 +261,21 @@ function Dashboard() {
             {/* Tutorial Popups */}
             <TutorialPopup
                 step={1}
-                isVisible={tutorialStep === 1}
+                isVisible={tutorialStep === 1 && !isTutorialDismissed}
                 content="Welcome, Captain! Let's start by recording your first Nectar (income). For example, add 'Salary' of $10000."
+                onClose={() => setIsTutorialDismissed(true)}
             />
             <TutorialPopup
                 step={2}
-                isVisible={tutorialStep === 2}
+                isVisible={tutorialStep === 2 && !isTutorialDismissed}
                 content="Great! Now let's record a Burn (expense). For example, add 'Rent' of $6000. This tracks your ship's fuel usage."
+                onClose={() => setIsTutorialDismissed(true)}
             />
             <TutorialPopup
                 step={3}
-                isVisible={tutorialStep === 3}
+                isVisible={tutorialStep === 3 && !isTutorialDismissed}
                 content="Perfect! Your ship's log is looking healthy. Now, click 'View Goals Orbit' to start building your solar system."
+                onClose={() => setIsTutorialDismissed(true)}
             />
         </div>
     );

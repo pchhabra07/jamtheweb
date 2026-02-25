@@ -29,8 +29,10 @@ function Landing() {
         let animationFrameId;
 
         const resize = () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = window.innerWidth * dpr;
+            canvas.height = window.innerHeight * dpr;
+            ctx.scale(dpr, dpr);
         };
 
         window.addEventListener('resize', resize);
@@ -39,19 +41,19 @@ function Landing() {
         let nectars = [];
         let mouseX = 0;
         let mouseY = 0;
+        const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
         const trackMouse = (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-
-            // Add a small splash effect cursor class to the body on mousemove
-            // We use the CSS cursor on landing-container, so this isn't strictly necessary for the icon itself
+            mouseX = e.clientX || (e.touches && e.touches[0].clientX);
+            mouseY = e.clientY || (e.touches && e.touches[0].clientY);
         };
         window.addEventListener('mousemove', trackMouse);
+        window.addEventListener('touchmove', trackMouse, { passive: true });
+        window.addEventListener('touchstart', trackMouse, { passive: true });
 
         class NectarDrop {
             constructor() {
-                this.x = Math.random() * canvas.width;
+                this.x = Math.random() * window.innerWidth;
                 this.y = -20;
                 // Bigger prominent hexes
                 this.size = Math.random() * 12 + 10;
@@ -78,8 +80,9 @@ function Landing() {
                     const dy = this.y - mouseY;
                     const distance = Math.sqrt(dx * dx + dy * dy);
 
-                    // If cursor touches the nectar drop
-                    if (distance < this.size + 40 && !this.isCaught) {
+                    // If cursor touches the nectar drop - larger radius for mobile
+                    const hitRadius = isMobile ? this.size + 80 : this.size + 40;
+                    if (distance < hitRadius && !this.isCaught) {
                         this.isCaught = true;
                         setScore(prev => prev + 10);
                     }
@@ -140,15 +143,15 @@ function Landing() {
             nectars.push(new NectarDrop());
             // arbitrary limit to prevent lag (increased for better effect)
             if (nectars.length > 80) {
-                nectars = nectars.filter(n => n.y < canvas.height && !n.done);
+                nectars = nectars.filter(n => n.y < (window.innerHeight || canvas.height) && !n.done);
             }
         }, 600);
 
         const animate = () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
             // Cleanup caught/completed drops
-            nectars = nectars.filter(n => !n.done && n.y < canvas.height + 50);
+            nectars = nectars.filter(n => !n.done && n.y < window.innerHeight + 50);
 
             nectars.forEach((drop) => {
                 drop.update();
@@ -163,6 +166,8 @@ function Landing() {
         return () => {
             window.removeEventListener('resize', resize);
             window.removeEventListener('mousemove', trackMouse);
+            window.removeEventListener('touchmove', trackMouse);
+            window.removeEventListener('touchstart', trackMouse);
             clearInterval(spawnInterval);
             cancelAnimationFrame(animationFrameId);
         };

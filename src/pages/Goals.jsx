@@ -13,6 +13,7 @@ function Goals() {
     const [goals, setGoals] = useState([]);
     const [netBalance, setNetBalance] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [isTutorialDismissed, setIsTutorialDismissed] = useState(false);
 
     // Form State
     const [label, setLabel] = useState('');
@@ -23,6 +24,11 @@ function Goals() {
     const [selectedGoalId, setSelectedGoalId] = useState(null);
 
     const navigate = useNavigate();
+
+    // Reset dismissal state when tutorial step changes
+    useEffect(() => {
+        setIsTutorialDismissed(false);
+    }, [userData?.tutorialStep]);
 
     useEffect(() => {
         const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
@@ -375,13 +381,15 @@ function Goals() {
             {/* Tutorial Popups */}
             <TutorialPopup
                 step={4}
-                isVisible={tutorialStep === 4}
+                isVisible={tutorialStep === 4 && !isTutorialDismissed}
                 content="Welcome to the Orbit! Let's add your first Goal planet. For example, add 'Vacation' with a target of $20000."
+                onClose={() => setIsTutorialDismissed(true)}
             />
             <TutorialPopup
                 step={5}
-                isVisible={tutorialStep === 5}
+                isVisible={tutorialStep === 5 && !isTutorialDismissed}
                 content="A new planet has entered your system! Now, use your net balance to fuel it. Inject some funds, e.g., $3000, into your 'Vacation' goal."
+                onClose={() => setIsTutorialDismissed(true)}
             />
         </div>
     );

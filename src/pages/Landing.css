@@ -247,7 +247,17 @@
 }
 
 @media (max-width: 768px) {
+    .landing-container {
+        touch-action: none;
+        /* Prevent scrolling while catching nectar */
+    }
+
     .hero-title {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
+        /* Even smaller for mobile */
+    }
+
+    .hero-content {
+        padding: 1rem;
     }
 }
