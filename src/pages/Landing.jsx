@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Target, Hexagon, ShieldAlert, Sparkles } from 'lucide-react';
 import './Landing.css';
 
 function Landing() {
     const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
     const [score, setScore] = useState(0);
+    const [isTransitioning, setIsTransitioning] = useState(false);
     const canvasRef = useRef(null);
+    const navigate = useNavigate();
 
     // Mouse Tracking for the glowing background gradient
     useEffect(() => {
@@ -58,6 +60,8 @@ function Landing() {
                 this.isCaught = false;
                 this.catchAnim = 0;     // Animation frame counter
                 this.done = false;      // Flag to remove from array
+                this.rotation = Math.random() * Math.PI * 2; // Initial rotation
+                this.rotationSpeed = (Math.random() - 0.5) * 0.05; // Slow spin
             }
 
             update() {
@@ -79,6 +83,7 @@ function Landing() {
                         this.isCaught = true;
                         setScore(prev => prev + 10);
                     }
+                    this.rotation += this.rotationSpeed;
                 }
             }
 
@@ -94,15 +99,20 @@ function Landing() {
                     ctx.globalAlpha = Math.max(0, 1 - progress);
                     ctx.translate(this.x, this.y);
                     ctx.scale(scale, scale);
-                    ctx.rotate(progress * Math.PI); // Spin while bursting
+                    ctx.rotate(progress * Math.PI + this.rotation); // Spin while bursting
+                    ctx.translate(-this.x, -this.y);
+                } else {
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.rotation);
                     ctx.translate(-this.x, -this.y);
                 }
 
-                // Draw Hexagon (more honeycomb-like)
+                // Draw Regular Hexagon
                 ctx.beginPath();
                 for (let i = 0; i < 6; i++) {
-                    const angle = i * Math.PI / 3; // 60 degrees
+                    const angle = i * Math.PI / 3; // 60 degrees precisely
                     const px = this.x + this.size * Math.cos(angle);
+                    // To make them "regular", we use the same size/radius and cos/sin
                     const py = this.y + this.size * Math.sin(angle);
                     if (i === 0) ctx.moveTo(px, py);
                     else ctx.lineTo(px, py);
@@ -158,9 +168,18 @@ function Landing() {
         };
     }, []);
 
+    const handleEnterHive = (e) => {
+        e.preventDefault();
+        setIsTransitioning(true);
+        // Wait for the expansion animation to finish before routing
+        setTimeout(() => {
+            navigate('/auth');
+        }, 1200); // 1200ms aligns with new slower CSS transition duration
+    };
+
     return (
         <div
-            className="landing-container"
+            className={`landing-container ${isTransitioning ? 'transition-active' : ''}`}
             style={{
                 '--mouse-x': `${mousePos.x}%`,
                 '--mouse-y': `${mousePos.y}%`
@@ -191,7 +210,10 @@ function Landing() {
                         A stunning financial tracker to keep your hive healthy.
                     </p>
                     <div className="hero-cta">
-                        <Link to="/auth" className="btn-primary btn-large">Enter the Hive</Link>
+                        <button onClick={handleEnterHive} className="btn-primary btn-large cta-transition-btn">
+                            Enter the Hive
+                            <div className="cta-expansion-bg"></div>
+                        </button>
                     </div>
                 </div>
             </main>

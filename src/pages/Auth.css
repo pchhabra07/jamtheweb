@@ -4,19 +4,93 @@
     align-items: center;
     justify-content: center;
     padding: 2rem;
-    background-image:
-        radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 10% 90%, rgba(59, 130, 246, 0.05) 0%, transparent 40%);
+    background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 50%, #d97706 100%);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0.5;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .auth-card {
     width: 100%;
     max-width: 440px;
-    background: var(--color-surface);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(15, 17, 26, 0.95);
+    /* Extremely dark to contrast the bright orange body */
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 1.5rem;
     padding: 2.5rem;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes slideUpFade {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.auth-logo,
+.auth-title,
+.auth-subtitle,
+.auth-error,
+.input-group,
+.auth-submit,
+.auth-divider,
+.btn-google,
+.auth-toggle {
+    opacity: 0;
+    animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.auth-logo {
+    animation-delay: 0.1s;
+}
+
+.auth-title {
+    animation-delay: 0.2s;
+}
+
+.auth-subtitle {
+    animation-delay: 0.3s;
+}
+
+.auth-error {
+    animation-delay: 0.35s;
+}
+
+.auth-form .input-group:nth-child(1) {
+    animation-delay: 0.4s;
+}
+
+.auth-form .input-group:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+.auth-submit {
+    animation-delay: 0.6s;
+}
+
+.auth-divider {
+    animation-delay: 0.7s;
+}
+
+.btn-google {
+    animation-delay: 0.8s;
+}
+
+.auth-toggle {
+    animation-delay: 0.9s;
 }
 
 .auth-logo {
