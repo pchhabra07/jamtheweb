@@ -245,20 +245,19 @@ function Goals() {
                                                 <span className="percent">{Math.round(percent)}%</span>
                                             </div>
 
-                                            {isSelected && (
-                                                <div
-                                                    className="planet-actions"
-                                                    style={{ animationDuration: `${duration}s` }}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleDeleteGoal(goal);
-                                                    }}
-                                                >
-                                                    <button className="btn-delete-planet" title="Delete & Refund">
-                                                        <Trash2 size={14} />
-                                                    </button>
-                                                </div>
-                                            )}
+                                            <div
+                                                className={`planet-actions ${isSelected ? 'visible' : ''}`}
+                                                style={{ animationDuration: `${duration}s` }}
+                                                onClick={(e) => {
+                                                    if (!isSelected) return;
+                                                    e.stopPropagation();
+                                                    handleDeleteGoal(goal);
+                                                }}
+                                            >
+                                                <button className="btn-delete-planet" title="Delete & Refund" tabIndex={isSelected ? 0 : -1}>
+                                                    <Trash2 size={14} />
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 );
