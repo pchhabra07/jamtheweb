@@ -218,7 +218,7 @@ function Goals() {
                                             animationDuration: `${duration}s`
                                         }}
                                     >
-                                        <svg viewBox="0 0 100 100" className="orbit-svg-trail">
+                                        <svg viewBox="0 0 100 100" className="orbit-svg-trail" style={{ overflow: 'visible' }}>
                                             <circle
                                                 cx="50" cy="50" r="49"
                                                 fill="none"
@@ -227,7 +227,10 @@ function Goals() {
                                                 strokeDasharray="307.87"
                                                 strokeDashoffset={307.87 * (1 - percent / 100)}
                                                 strokeLinecap="round"
-                                                style={{ transition: 'stroke-dashoffset 1s ease-in-out' }}
+                                                style={{
+                                                    transition: 'stroke-dashoffset 1s ease-in-out, filter 0.3s',
+                                                    filter: isSelected ? `drop-shadow(0 0 6px ${color})` : 'none'
+                                                }}
                                             />
                                         </svg>
 
@@ -238,7 +241,15 @@ function Goals() {
                                                 setSelectedGoalId(isSelected ? null : goal.id);
                                             }}
                                         >
-                                            <div className="planet" style={{ backgroundColor: color }} />
+                                            <div
+                                                className="planet"
+                                                style={{
+                                                    backgroundColor: color,
+                                                    boxShadow: isSelected
+                                                        ? `inset -4px -4px 8px rgba(0, 0, 0, 0.3), 0 0 20px 4px ${color}`
+                                                        : 'inset -4px -4px 8px rgba(0, 0, 0, 0.3)'
+                                                }}
+                                            />
 
                                             <div className="planet-label" style={{ animationDuration: `${duration}s` }}>
                                                 <span className="name">{goal.label}</span>
